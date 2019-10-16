@@ -1,0 +1,6 @@
+#!/bin/bash
+f="$(readlink -f "${0}")"
+d="$(dirname "$f")"
+bin="$d//bin"
+LD_LIBRARY_PATH="$d//lib":$LD_LIBRARY_PATH "$bin/jivelite" "$@"
+
