@@ -2,3 +2,45 @@ sudo apt-get install libsdl-ttf2.0-0
 sudo apt-get install libsdl-image1.2
 sudo apt-get install libsdl-gfx1.2-5
 
+sudo apt install libsdl1.2-dev libsdl-ttf2.0-dev libsdl-gfx1.2-dev libsdl-image1.2-dev libsdl2-dev
+
+git clone https://github.com/erdoukki/jivelite.git
+
+cd jivelite/
+
+patch -p1 -i patches/linux-debian.patch
+
+patch -p0 -i patches/jivelite-lua-5.1.patch
+
+svn checkout https://github.com/ralph-irving/squeeze ... /lua-5.1.1
+cd lua-5.1.1
+wget https://raw.githubusercontent.com/ralph ... -lua.patch
+patch -p0 -i squeezplay-lua.patch
+patch -p0 -i ../patches/jivelite-lua511-Makefile.diff
+
+sudo mkdir -p /opt/jivelite
+id -a
+sudo chown $USER:users /opt/jivelite
+sudo chown gerald:users /opt/jivelite
+make linux
+make INSTALL_TOP=/opt/jivelite install
+/opt/jivelite/bin/lua
+
+<EXIT> avec <CTRL>+D
+
+cd ..
+cp /opt/jivelite/include/ . -Rv
+make PREFIX=/opt/jivelite
+bin/jivelite
+cp -p bin/jivelite /opt/jivelite/bin
+cp -pr lib /opt/jivelite
+cp -pr share /opt/jivelite
+
+
+cp '/home/gerald/Documents/jivelite-amd64/AppRun' .
+cp '/home/gerald/Documents/jivelite-amd64/INSTALL.DEBIAN' .
+cp '/home/gerald/Documents/jivelite-amd64/app.png' .
+cp '/home/gerald/Documents/jivelite-amd64/app.desktop' .
+cp AppRun /opt/jivelite/
+cp app.* /opt/jivelite/
+ARCH=x86_64 '/home/gerald/AppImages/appimagetool-x86_64.AppImage' /opt/jivelite/
