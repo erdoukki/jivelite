@@ -113,6 +113,237 @@ index 6ab644d..b5788c1 100644
  
  #------
  # Compat-5.1 directory
+diff --git a/lib-src/luazipfilter/luazipfilter.c b/lib-src/luazipfilter/luazipfilter.c
+index a3bc244..99ac837 100644
+--- a/lib-src/luazipfilter/luazipfilter.c
++++ b/lib-src/luazipfilter/luazipfilter.c
+@@ -5,8 +5,8 @@
+ 
+ #include "zlib.h"
+ 
+-#include "lua.h"
+-#include "lauxlib.h"
++#include "../../include/lua.h"
++#include "../../include/lauxlib.h"
+ 
+ 
+ typedef unsigned int u32_t;
+diff --git a/patches/linux-debian.patch b/patches/linux-debian.patch
+index e67a4b3..9bc0d20 100644
+--- a/patches/linux-debian.patch
++++ b/patches/linux-debian.patch
+@@ -1,211 +0,0 @@
+-diff --git a/Makefile b/Makefile
+-index 802e55d..1bb7a15 100644
+---- a/Makefile
+-+++ b/Makefile
+-@@ -1,7 +1,7 @@
+- # Jivelite makefile
+- 
+- # set PREFIX for location of luajit include and libs
+--PREFIX ?= /usr/local
+-+PREFIX ?= /opt/squeezeplay
+- 
+- all: srcs libs
+- 
+-diff --git a/lib-src/Makefile b/lib-src/Makefile
+-index f02b375..07f151c 100644
+---- a/lib-src/Makefile
+-+++ b/lib-src/Makefile
+-@@ -2,7 +2,7 @@
+- # NB - repo has modified paths which assume use of luajit2.0 from source
+- 
+- TARGET   ?= linux
+--LD_FLAGS ?= "-shared"
+-+LD_FLAGS ?= "-shared -L/opt/jivelite/lib -L/opt/squeezeplay/lib"
+- 
+- LIBS = cjson luaexpat luafilesystem luamd5 luasocket luazipfilter
+- 
+-diff --git a/lib-src/lua-cjson-2.1.0/Makefile b/lib-src/lua-cjson-2.1.0/Makefile
+-index 7b38590..1dba34b 100644
+---- a/lib-src/lua-cjson-2.1.0/Makefile
+-+++ b/lib-src/lua-cjson-2.1.0/Makefile
+-@@ -13,12 +13,12 @@
+- ##### Build defaults #####
+- LUA_VERSION =       5.1
+- TARGET =            cjson.so
+--PREFIX =            /usr/local
+-+PREFIX =            /opt/squeezeplay
+- #CFLAGS =            -g -Wall -pedantic -fno-inline
+--CFLAGS =            -O3 -Wall -pedantic -DNDEBUG
+-+CFLAGS =            -s -O3 -Wall -pedantic -DNDEBUG
+- CJSON_CFLAGS =      -fpic
+- #CJSON_LDFLAGS =     -shared
+--LUA_INCLUDE_DIR =   $(PREFIX)/include/luajit-2.0
+-+LUA_INCLUDE_DIR =   $(PREFIX)/include
+- LUA_CMODULE_DIR =   $(PREFIX)/lib/lua/$(LUA_VERSION)
+- LUA_MODULE_DIR =    $(PREFIX)/share/lua/$(LUA_VERSION)
+- LUA_BIN_DIR =       $(PREFIX)/bin
+-diff --git a/lib-src/luaexpat-1.2.0/config b/lib-src/luaexpat-1.2.0/config
+-index 93bf185..5474c8b 100644
+---- a/lib-src/luaexpat-1.2.0/config
+-+++ b/lib-src/luaexpat-1.2.0/config
+-@@ -4,7 +4,7 @@ LUA_LIBDIR= $(PREFIX)/lib/lua/5.1
+- # System's lua directory (where Lua libraries are installed)
+- LUA_DIR= $(PREFIX)/share/lua/5.1
+- # Lua includes directory
+--LUA_INC= $(PREFIX)/include/luajit-2.0
+-+LUA_INC= $(PREFIX)/include
+- 
+- # OS dependent
+- #LIB_OPTION= -shared #for Linux
+-diff --git a/lib-src/luafilesystem-1.6.2/config b/lib-src/luafilesystem-1.6.2/config
+-index 5457041..0fcd231 100644
+---- a/lib-src/luafilesystem-1.6.2/config
+-+++ b/lib-src/luafilesystem-1.6.2/config
+-@@ -1,13 +1,13 @@
+- # Installation directories
+- 
+- # Default installation prefix
+--PREFIX=/usr/local
+-+PREFIX=/opt/squeezeplay
+- 
+- # System's libraries directory (where binary libraries are installed)
+--LUA_LIBDIR= $(PREFIX)/lib/lua/5.1
+-+LUA_LIBDIR= /opt/jivelite/lib/lua/5.1:$(PREFIX)/lib/lua/5.1
+- 
+- # Lua includes directory
+--LUA_INC= $(PREFIX)/include/luajit-2.0
+-+LUA_INC= $(PREFIX)/include
+- 
+- # OS dependent
+- #LIB_OPTION= -shared #for Linux
+-@@ -16,7 +16,7 @@ LUA_INC= $(PREFIX)/include/luajit-2.0
+- LIBNAME= $T.so.$V
+- 
+- # Compilation directives
+--WARN= -O2 -Wall -fPIC -W -Waggregate-return -Wcast-align -Wmissing-prototypes -Wnested-externs -Wshadow -Wwrite-strings -pedantic
+-+WARN= -s -O3 -Wall -fPIC -W -Waggregate-return -Wcast-align -Wmissing-prototypes -Wnested-externs -Wshadow -Wwrite-strings -pedantic
+- INCS= -I$(LUA_INC)
+- CFLAGS= $(WARN) $(INCS)
+- CC= gcc
+-diff --git a/lib-src/luamd5/Makefile b/lib-src/luamd5/Makefile
+-index aebb5e5..43476d0 100644
+---- a/lib-src/luamd5/Makefile
+-+++ b/lib-src/luamd5/Makefile
+-@@ -2,7 +2,7 @@
+- 
+- # change these to reflect your Lua installation
+- #LUA= /tmp/lhf/lua-5.1.4
+--LUAINC= $(PREFIX)/include/luajit-2.0
+-+LUAINC= $(PREFIX)/include
+- LUALIB= $(LUA)/lib
+- LUABIN= $(LUA)/bin
+- 
+-diff --git a/lib-src/luasocket-2.0.2/config b/lib-src/luasocket-2.0.2/config
+-index 6ab644d..b5788c1 100644
+---- a/lib-src/luasocket-2.0.2/config
+-+++ b/lib-src/luasocket-2.0.2/config
+-@@ -18,7 +18,7 @@ UNIX_SO=unix.$(EXT)
+- #LUAINC=-I/usr/local/include/lua50
+- #LUAINC=-I/usr/local/include/lua5.1
+- #LUAINC=-Ilua-5.1.1/src
+--LUAINC=-I$(PREFIX)/include/luajit-2.0
+-+LUAINC=-I$(PREFIX)/include
+- 
+- #------
+- # Compat-5.1 directory
+-diff --git a/share/jive/jive/net/Process.lua b/share/jive/jive/net/Process.lua
+-index 40b4794..043efb5 100644
+---- a/share/jive/jive/net/Process.lua
+-+++ b/share/jive/jive/net/Process.lua
+-@@ -11,9 +11,6 @@ local Task            = require("jive.ui.Task")
+- local debug           = require("jive.utils.debug")
+- local log             = require("jive.utils.log").logger("net.socket")
+- 
+---- use ffi as luajit does not appear to support fileno as a method for io objects
+--local ffi             = require("ffi")
+--ffi.cdef[[int fileno(void *)]]
+- 
+- module(..., oo.class)
+- 
+-@@ -78,8 +75,7 @@ function status(self, sink)
+- end
+- 
+- function getfd(self)
+--	--return self.fh:fileno()
+--	return ffi.C.fileno(self.fh)
+-+	return self.fh:fileno()
+- end
+- 
+- 
+-diff --git a/src/Makefile b/src/Makefile
+-index 49a5dc6..4c799b2 100644
+---- a/src/Makefile
+-+++ b/src/Makefile
+-@@ -1,8 +1,8 @@
+- LDFLAGS ?= -lrt
+- SOURCES ?= platform_linux.c
+- 
+--CFLAGS  += -I. -I$(PREFIX)/include/luajit-2.0 -I/usr/include/SDL -Wall -fPIC
+--LDFLAGS += -lSDL -lSDL_ttf -lSDL_image -lSDL_gfx -lluajit-5.1 -lm -lpthread
+-+CFLAGS  += -I. -I$(PREFIX)/include -I$(PREFIX)/include/SDL -s -Wall -fPIC -DOPTJIVELITE
+-+LDFLAGS += -lSDL -lSDL_ttf -lSDL_image -lSDL_gfx -L/opt/jivelite/lib -L$(PREFIX)/lib -llua -lm -lpthread
+- EXE = ../bin/jivelite
+- 
+- DEPS    = jive.h common.h log.h version.h
+-@@ -17,7 +17,7 @@ visualizer:
+- 	cd visualizer; make
+- 
+- $(EXE): $(OBJECTS)
+--	$(CC) $(OBJECTS) $(LDFLAGS) -o $@
+-+	$(CC) $(OBJECTS) -Wl,-rpath,$(PREFIX)/lib $(LDFLAGS) -o $@
+- 
+- $(OBJECTS): $(DEPS)
+- 
+-diff --git a/src/common.h b/src/common.h
+-index 8f2ea3a..08cd9fa 100644
+---- a/src/common.h
+-+++ b/src/common.h
+-@@ -59,9 +59,9 @@ typedef _W64 int   ssize_t;
+- #define LIBRARY_EXT		"so"
+- #endif /* !DIR_SEPARATOR_CHAR */
+- 
+--#include <SDL.h>
+-+#include <SDL/SDL.h>
+- 
+--#include "lua.h"
+-+#include "../lua-5.1.1/src/lua.h"
+- #include "lauxlib.h"
+- 
+- #include "log.h"
+-diff --git a/src/jive.h b/src/jive.h
+-index 7d55cf5..4ab3628 100644
+---- a/src/jive.h
+-+++ b/src/jive.h
+-@@ -10,10 +10,10 @@
+- #include "common.h"
+- #include "log.h"
+- 
+--#include <SDL_image.h>
+--#include <SDL_ttf.h>
+--#include <SDL_gfxPrimitives.h>
+--#include <SDL_rotozoom.h>
+-+#include <SDL/SDL_image.h>
+-+#include <SDL/SDL_ttf.h>
+-+#include <SDL/SDL_gfxPrimitives.h>
+-+#include <SDL/SDL_rotozoom.h>
+- 
+- 
+- /* target frame rate 14 fps (originally) - may be tuned per platform, should be /2 */
+-diff --git a/src/jive_framework.c b/src/jive_framework.c
+-index 180ab27..4fabcd6 100644
+---- a/src/jive_framework.c
+-+++ b/src/jive_framework.c
+-@@ -10,7 +10,7 @@
+- #include <time.h>
+- 
+- #ifndef __APPLE__
+--#include <SDL_syswm.h>
+-+#include <SDL/SDL_syswm.h>
+- #endif
+- 
+- int (*jive_sdlevent_pump)(lua_State *L);
 diff --git a/share/jive/jive/net/Process.lua b/share/jive/jive/net/Process.lua
 index 40b4794..043efb5 100644
 --- a/share/jive/jive/net/Process.lua
@@ -162,21 +393,18 @@ index 49a5dc6..4c799b2 100644
  $(OBJECTS): $(DEPS)
  
 diff --git a/src/common.h b/src/common.h
-index 8f2ea3a..08cd9fa 100644
+index 8f2ea3a..e445d70 100644
 --- a/src/common.h
 +++ b/src/common.h
-@@ -59,9 +59,9 @@ typedef _W64 int   ssize_t;
+@@ -59,7 +59,7 @@ typedef _W64 int   ssize_t;
  #define LIBRARY_EXT		"so"
  #endif /* !DIR_SEPARATOR_CHAR */
  
 -#include <SDL.h>
 +#include <SDL/SDL.h>
  
--#include "lua.h"
-+#include "../lua-5.1.1/src/lua.h"
+ #include "lua.h"
  #include "lauxlib.h"
- 
- #include "log.h"
 diff --git a/src/jive.h b/src/jive.h
 index 7d55cf5..4ab3628 100644
 --- a/src/jive.h
